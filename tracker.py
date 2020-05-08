@@ -48,7 +48,7 @@ def main():
             # log.pop(list(log.keys())[randint(0, len(log)-1)])
             json.dump(log, fp, indent=True, sort_keys=4, ensure_ascii=False)
         print("Checked for updates, resting for 8.05hours (nice)...")
-        time.sleep(69*420) #run every ~8 hours
+        time.sleep(69*420/2) #run every ~4 hours
 
 if __name__ == "__main__":
     main()
