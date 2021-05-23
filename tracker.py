@@ -35,12 +35,13 @@ def main():
             with open("log.json", "r", encoding="utf-8") as fp:
                 read = json.load(fp)
         except Exception as i:
-            print("Error: " + i)
+            print(i)
             read = {}
         with open("log.json", "w", encoding="utf-8") as fp:
             for item in log.keys():
                 if item not in list(read.keys()):
                     # Notify me by email and record in the log file if new post is found
+                    print(item)
                     status = send_email(log[item], SUBJECT = item)
                     read[item] = log[item]
                     print(status)
