@@ -1,7 +1,7 @@
 import smtplib
 import os
 
-def send_email(TEXT,  FROM = "b4ck10up@gmail.com", TO = "b4ck10up@gmail.com", SUBJECT = "Update"):
+def send_email(TEXT,  FROM = os.getenv("FROM"), TO = ["b4ck10up@gmail.com"], SUBJECT = "Update"):
     # Prepare the message and send the email
     message = """From: %s\nTo: %s\nSubject: %s\n\n%s
     """ % (FROM, ", ".join(TO), SUBJECT, TEXT)
