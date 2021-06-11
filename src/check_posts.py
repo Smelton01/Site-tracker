@@ -14,18 +14,18 @@ footer = "These email updates are provided by Simon J. View the source code at h
 
 
 def main():    
-    print("actually running, I think")
-    # # create connection to SQLite database
-    # conn = create_connection(database)
-    # create_table(conn)
+    # print("actually running, I think")
+    # create connection to SQLite database
+    conn = create_connection(database)
+    create_table(conn)
 
-    # log = get_posts(url)
-    # conn = create_connection(database)
-    # for post, details in log.items():
-    #     database_queries(conn, post, details)
-    #     # TODO remove for production 
-    #     # return
-    # print("Checked for updates, resting for 15 minutes...")
+    log = get_posts(url)
+    conn = create_connection(database)
+    for post, details in log.items():
+        database_queries(conn, post, details)
+        # TODO remove for production 
+        # return
+    print("Checked for updates, resting for 15 minutes...")
 
 def database_queries(conn, post, details):
     """
