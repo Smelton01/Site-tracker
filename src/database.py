@@ -1,6 +1,5 @@
 import sqlite3
 from sqlite3 import Error
-import pandas as pd
 
 def create_connection(db_file):
     """ create a database connection to a SQLite database """
