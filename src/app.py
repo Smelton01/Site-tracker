@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template
-from check_posts import main
-from database import check_user, create_user, create_connection
+from .check_posts import main
+from .database import check_user, create_user, create_connection
 import threading
 import atexit
 import re

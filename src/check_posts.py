@@ -1,10 +1,10 @@
 from requests import get
 from bs4 import BeautifulSoup as bs
 import json
-from email_app import send_email
+from .email_app import send_email
 import time
 from random import randint
-from database import *
+from .database import *
 from datetime import datetime
 import os
 
