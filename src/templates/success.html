@@ -27,11 +27,30 @@
             font-size: 16px;
             color: #666;
         }
+        
+        center {
+            margin: auto;
+            width: 50%;
+            padding: 20px;
+        }
+
+        .foot {
+            text-align: center;
+            position: absolute;
+            bottom: 20px;
+        }
 
         h1 {
             padding: 10px 0;
             font-size: 32px;
             font-weight: 300;
+            text-align: center;
+        }
+
+        h2 {
+            padding: 2px 0;
+            font-size: 18px;
+            font-weight: 240;
             text-align: center;
         }
 
@@ -45,8 +64,8 @@
         }
 
         .main-block {
-            max-width: 340px;
-            min-height: 460px;
+            max-width: 4600px;
+            min-height: 500px;
             padding: 10px 0;
             margin: auto;
             border-radius: 5px;
@@ -111,13 +130,13 @@
     <div class="main-block">
         <h1>Registration Complete</h1>
         <hr>
-        <div class="fas fa-check text-align"> <p class="text-center">DONE!!!</p> </div>
+        <div class="center"> <span class="text-center">DONE!!!</span> </div>
         <hr>
-        <img src="./static/success.jpeg" class="img-responsive" alt="Success image" style="max-width:340px;max-height: fit-content;">
-        <h3>Thank you for registering {{name}}.</h3> 
-        <h3> We will be sending you email updates as soon as they are available.</h3>
+        <img src="./static/success.jpeg" alt="Success image" style="object-fit: cover;">
+        <h2>Thank you for registering {{name}}.</h2> 
+        <h2> We will be sending you email updates as soon as they are available.</h2>
         
-        <p>Made by Simon Juba. Click <a href="https://github.com/Smelton01/Site-tracker">here</a> for more details on the project.</p>
+        <p class="foot">Made by Simon Juba. Click <a href="https://github.com/Smelton01/Site-tracker">here</a> for more details on the project.</p>
     </div>
 </body>
 
