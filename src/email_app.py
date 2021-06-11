@@ -3,22 +3,16 @@ import os
 from email.message import EmailMessage
 from email.mime.text import *
 
-# footer = "This email app was designed by Simon J. View the source code at https://github.com/Smelton01/Site_tracker \nTo unsibcribe please click this <a href='https://github.com/Smelton01/Site_tracker'>link</a>"
-
-
 def send_email(TEXT,  FROM = os.getenv("FROM"), TO = ["b4ck10up@gmail.com"], SUBJECT = "Update"):
-    
+    """
+    Function to send email updates to recipients
+    """
     message = EmailMessage()
     message["Subject"] = SUBJECT
     message["From"] = FROM
     message["To"] = TO
     
     message.set_content(TEXT)
-    # message.add_alternative(footer, subtype="html")
-    # print(message)
-    # Prepare the message and send the email
-    # message = """From: %s\nTo: %s\nSubject: %s\n\n%s
-    # """ % (FROM, ", ".join(TO), SUBJECT, TEXT)
     
     try:
         server = smtplib.SMTP("smtp.gmail.com", 587)
@@ -31,6 +25,3 @@ def send_email(TEXT,  FROM = os.getenv("FROM"), TO = ["b4ck10up@gmail.com"], SUB
     except Exception as e:
         print(e)
         return False
-
-
-# send_email("This email app was designed by Simon J. View the source code at https://github.com/Smelton01/Site_tracker \nTo unsibcribe please click this <a href='https://github.com/Smelton01/Site_tracker'>link</a>")

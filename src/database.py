@@ -2,7 +2,6 @@ import sqlite3
 from sqlite3 import Error
 import pandas as pd
 
-
 def create_connection(db_file):
     """ create a database connection to a SQLite database """
     conn = None
@@ -42,29 +41,17 @@ def create_table(conn):
     except Error as e:
         print(e)
 
-def main():
-    database = r"res/database.db"
-
-    
-    # # create a database connection
-    conn = create_connection(database)
-
-    conn = create_connection(database)
-    with conn:
-        print("added user")
-        user = ("Simon", "123@gmail.com")
-        create_user(conn, user)
-
-
-def create_user(conn, user):
+def create_user(conn, name="Anon", email="sample@web.com"):
     """
-    Create a new project into the projects table
-    :param conn:
-    :param project:
+    Create a new user into the users table
+    :param conn: Connection object
+    :param user: tuple with user info
     :return: project id
     """
     sql = ''' INSERT INTO users(name,email)
               VALUES(?,?) '''
+    
+    user = (name, email)
     cur = conn.cursor()
     cur.execute(sql, user)
     conn.commit()
@@ -118,21 +105,6 @@ def check_user(conn, name, email):
     :returns: boolean
     """    
     cur = conn.cursor()
-    cur.execute("SELECT * FROM users WHERE name=? AND email=?", (name, email))
+    cur.execute("SELECT * FROM users WHERE email=?", (email,))
     data = cur.fetchall()
     return True if data else False
-
-def get_users(conn):
-    """
-    Gets details of all registered users
-    :param conn: Connection to the SQLite database
-    :returns: List of registered users
-    """
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM users")
-    data = cur.fetchall()
-    return data
-
-
-if __name__=="__main__":
-    main()

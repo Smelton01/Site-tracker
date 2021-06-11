@@ -9,29 +9,23 @@ from datetime import datetime
 import os
 
 url = "https://www.fukuoka-now.com/en/classified/archive/?category=156"
-database = r"../res/database.db"
-footer = "This email app was designed by Simon J. View the source code at https://github.com/Smelton01/Site_tracker \nTo unsibcribe please click this <a href='https://github.com/Smelton01/Site_tracker'>link</a>"
+database = r"database/database.db"
+footer = "These email updates are provided by Simon J. View the source code at https://github.com/Smelton01/Site_tracker \nTo unsubcribe please follow this link https://github.com/Smelton01/Site_tracker"
 
 
 def main():    
+    # print("actually running, I think")
     # create connection to SQLite database
     conn = create_connection(database)
-
     create_table(conn)
 
-    while True:
-        log = get_posts(url)
-
-        conn = create_connection(database)
-
-        for post, details in log.items():
-            database_queries(conn, post, details)
-            # TODO remove for production 
-            # return
-
-        print("Checked for updates, resting for 8.05hours (nice)...")
-        time.sleep(69*420/2) #run every ~4 hours
-
+    log = get_posts(url)
+    conn = create_connection(database)
+    for post, details in log.items():
+        database_queries(conn, post, details)
+        # TODO remove for production 
+        # return
+    print("Checked for updates, resting for 15 minutes...")
 
 def database_queries(conn, post, details):
     """
@@ -48,17 +42,18 @@ def database_queries(conn, post, details):
             return
         
         else:
-            # add to database
-            post_details = (post, details["text"], details["posted_by"], details["date"])
-            create_post(conn, post_details)
             # send email notification
             email_content = f"Dear user,\n {details['text']} \nLink to original post: {details['src']} \nPosted by: {details['posted_by']} \nDate: {details['date']}\n\n{'*'*40}\n{footer}"
-            # print(email_content)
-            recipients = get_users(conn)
+            
+            print(email_content)
+            # recipients = get_users(conn)
+            # print(recipients)
             status = send_email(email_content, SUBJECT = "[FUKNOW] " + post, TO=["b4ck10up@gmail.com"])
-            if not status:
-                # TODO remove user from database
-                pass
+            print(status)
+            if status:
+                # add seen post to database
+                post_details = (post, details["text"], details["posted_by"], details["date"])
+                create_post(conn, post_details)
             return
 
 def get_posts(url):
@@ -86,13 +81,13 @@ def get_posts(url):
         # log[title] = "Yo Dude,\n" + txt + "\n" + det_url[i] + "\n" + posted[i].text.strip()
         *date, posted_by = posted[i].text.strip().split()
         date = " ".join(date[2:-1])
-        date = datetime.strptime(date, "%b. %d, %Y, %H:%M")
-        log[title] = {"title": title, "text": txt, "src": det_url[i], "date": date.strftime("%b. %d, %Y, %H:%M"), "posted_by": posted_by}
+        # print(date)
+        # date = datetime #.strptime(date, "%b. %d, %Y, %H:%M")
+        log[title] = {"title": title, "text": txt, "src": det_url[i], "date": date, "posted_by": posted_by}
+        # .strftime("%b. %d, %Y, %H:%M")
 
     return log
 
-
-        
 
 if __name__ == "__main__":
     main()
