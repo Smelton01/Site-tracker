@@ -1,1 +1,1 @@
-web: gunicorn tracker
+web gunicorn src.app:app
