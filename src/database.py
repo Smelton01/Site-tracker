@@ -35,7 +35,7 @@ def create_user(conn, name="Anon", email="sample@web.com"):
     Create a new user into the users table
     :param conn: Connection object
     :param user: tuple with user info
-    :return: project id
+    :return: user id
     """
     sql = ''' INSERT INTO users(user_name,user_email)
               VALUES(%s,%s) RETURNING user_id'''
@@ -49,7 +49,7 @@ def create_user(conn, name="Anon", email="sample@web.com"):
 def create_post(conn, post):
     sql = """
         INSERT INTO posts(post_title, post_content, post_author, post_date)
-        VALUES(%s,%s,%s,%s)
+        VALUES(%s,%s,%s,%s) RETURNING post_id
     """
     cur = conn.cursor()
     cur.execute(sql, post)

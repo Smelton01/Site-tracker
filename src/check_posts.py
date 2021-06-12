@@ -48,10 +48,8 @@ def database_queries(conn, post, details):
             email_content = f"Dear user,\n {details['text']} \nLink to original post: {details['src']} \nPosted by: {details['posted_by']} \nDate: {details['date']}\n\n{'*'*40}\n{footer}"
             
             recipients = get_users(conn)
-            print(recipients)
             # print(recipients)
             status = send_email(email_content, SUBJECT = "[FUKNOW] " + post, TO=recipients)
-            print(status)
             if status:
                 # add seen post to database
                 post_details = (post, details["text"], details["posted_by"], details["date"])
