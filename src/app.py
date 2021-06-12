@@ -75,7 +75,6 @@ def index():
 
         # add user to database
         result = create_user(conn, name=name, email=email)
-        print(result)
         if not result:
             # TODO fail template, database error template
             pass
