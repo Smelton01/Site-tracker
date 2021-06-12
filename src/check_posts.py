@@ -6,26 +6,31 @@ import time
 from random import randint
 from .database import *
 from datetime import datetime
+import psycopg2
 import os
 
 url = "https://www.fukuoka-now.com/en/classified/archive/?category=156"
-database = r"database/database.db"
 footer = "These email updates are provided by Simon J. View the source code at https://github.com/Smelton01/Site_tracker \nTo unsubcribe please follow this link https://github.com/Smelton01/Site_tracker"
 
 
 def main():    
-    # print("actually running, I think")
-    # create connection to SQLite database
-    conn = create_connection(database)
-    create_table(conn)
+    print("actually running, I think")
+    # create connection to PostgreSQL database
+    conn = psycopg2.connect(os.getenv("DATABASE_URL"), sslmode='require')
 
+    # create database table
+    create_table(conn)
+    
+    get_users(conn)
+
+    # get posts from url
     log = get_posts(url)
-    conn = create_connection(database)
+
     for post, details in log.items():
         database_queries(conn, post, details)
-        # TODO remove for production 
-        # return
+
     print("Checked for updates, resting for 15 minutes...")
+    conn.close()
 
 def database_queries(conn, post, details):
     """
@@ -45,11 +50,10 @@ def database_queries(conn, post, details):
             # send email notification
             email_content = f"Dear user,\n {details['text']} \nLink to original post: {details['src']} \nPosted by: {details['posted_by']} \nDate: {details['date']}\n\n{'*'*40}\n{footer}"
             
-            print(email_content)
-            # recipients = get_users(conn)
+            recipients = get_users(conn)
             # print(recipients)
-            status = send_email(email_content, SUBJECT = "[FUKNOW] " + post, TO=["b4ck10up@gmail.com"])
-            print(status)
+            status = send_email(email_content, SUBJECT = "[FUKNOW] " + post, TO=recipients)
+
             if status:
                 # add seen post to database
                 post_details = (post, details["text"], details["posted_by"], details["date"])
@@ -87,7 +91,6 @@ def get_posts(url):
         # .strftime("%b. %d, %Y, %H:%M")
 
     return log
-
 
 if __name__ == "__main__":
     main()

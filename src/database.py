@@ -1,15 +1,3 @@
-import sqlite3
-from sqlite3 import Error
-
-def create_connection(db_file):
-    """ create a database connection to a SQLite database """
-    conn = None
-    try:
-        conn = sqlite3.connect(db_file)
-    except Error as e:
-        print(e)
-
-    return conn
 
 def create_table(conn):
     """ create a table from the create_table_sql statement
@@ -19,17 +7,17 @@ def create_table(conn):
     """
 
     sql_create_users_table = """ CREATE TABLE IF NOT EXISTS users (
-                                        id integer PRIMARY KEY,
-                                        name text,
-                                        email text NOT NULL
+                                        user_id SERIAL PRIMARY KEY,
+                                        user_name TEXT NOT NULL,
+                                        user_email TEXT NOT NULL
                                     ); """
 
     sql_create_posts_table = """CREATE TABLE IF NOT EXISTS posts (
-                                    id integer PRIMARY KEY,
-                                    title text NOT NULL,
-                                    content text NOT NULL,
-                                    author text NOT NULL,
-                                    date_added text NOT NULL
+                                    post_id SERIAL PRIMARY KEY,
+                                    post_title TEXT NOT NULL,
+                                    post_content TEXT NOT NULL,
+                                    post_author TEXT NOT NULL,
+                                    post_date TEXT NOT NULL
                                 );"""
 
 
@@ -37,8 +25,10 @@ def create_table(conn):
         c = conn.cursor()
         c.execute(sql_create_posts_table)
         c.execute(sql_create_users_table)
-    except Error as e:
+    except Exception as e:
         print(e)
+    finally:
+        conn.commit()
 
 def create_user(conn, name="Anon", email="sample@web.com"):
     """
@@ -47,35 +37,35 @@ def create_user(conn, name="Anon", email="sample@web.com"):
     :param user: tuple with user info
     :return: project id
     """
-    sql = ''' INSERT INTO users(name,email)
-              VALUES(?,?) '''
+    sql = ''' INSERT INTO users(user_name,user_email)
+              VALUES(%s,%s) RETURNING user_id'''
     
     user = (name, email)
     cur = conn.cursor()
     cur.execute(sql, user)
     conn.commit()
-    return cur.lastrowid
+    return cur.fetchone()
 
 def create_post(conn, post):
     sql = """
-        INSERT INTO posts(title, content, author, date_added)
-        VALUES(?,?,?,?)
+        INSERT INTO posts(post_title, post_content, post_author, post_date)
+        VALUES(%s,%s,%s,%s)
     """
     cur = conn.cursor()
     cur.execute(sql, post)
     conn.commit()
-    return cur.lastrowid
+    return cur.fetchone()
 
-def delete_user(conn, id):
+def delete_user(conn, email):
     """
     Delete a task by user by id
     :param conn:  Connection to the SQLite database
     :param id: id of the task
     :return:
     """
-    sql = 'DELETE FROM users WHERE id=?'
+    sql = 'DELETE FROM users WHERE user_email=%s'
     cur = conn.cursor()
-    cur.execute(sql, (id,))
+    cur.execute(sql, (email,))
     conn.commit()
 
 def check_post(conn, title, date):
@@ -87,12 +77,12 @@ def check_post(conn, title, date):
     :return: boolean 
     """
     sql = """
-            SELECT * FROM posts WHERE title=? AND date_added=?
+            SELECT * FROM posts WHERE post_title=%s AND post_date=%s
     """
 
     cur = conn.cursor()
     cur.execute(sql, (title,date))
-    data = cur.fetchall()
+    data = cur.fetchone()
     return True if data else False
     
 def check_user(conn, name, email):
@@ -104,6 +94,16 @@ def check_user(conn, name, email):
     :returns: boolean
     """    
     cur = conn.cursor()
-    cur.execute("SELECT * FROM users WHERE email=?", (email,))
-    data = cur.fetchall()
+    cur.execute("SELECT * FROM users WHERE user_email=%s", (email,))
+    data = cur.fetchone()
     return True if data else False
+
+def get_users(conn):
+    """
+    Database query for all registered users
+    """
+
+    cur = conn.cursor()
+    cur.execute("SELECT user_email FROM users")
+    data = cur.fetchall()
+    return [email[0] for email in data]

@@ -1,15 +1,15 @@
 from flask import Flask, request, render_template
 from .check_posts import main
-from .database import check_user, create_user, create_connection
+from .database import check_user, create_user, delete_user
 import threading
 import atexit
 import re
+import os
+import psycopg2
 
 
-POOL_TIME = 10 #*60 # 15 minutes
+POOL_TIME = 15*60 # 15 minutes
 
-# setup database connection
-database = r"database/database.db"
 
 # lock to control databae access
 data_lock = threading.Lock()
@@ -57,27 +57,25 @@ app = create_app()
 def index():
     if request.method == 'POST':
         # database connection
-        conn = create_connection(database)
+        conn = psycopg2.connect(os.getenv("DATABASE_URL"), sslmode='require')
 
         # get form data
         name, email = request.form["name"], request.form["email"]
 
         if not re.search(r"^[\w\.\+\-]+\@[\w]+\.[a-z]{2,3}$", email):
             # TODO invalid email template
-            pass
-            print("validation failed")
+            return "Invalid Email"
         
         # check if user already exists
         user_exists = check_user(conn, name, email)
         
         if user_exists:
             # TODO already registered template
-            pass
-            print("user exits")
+            return "User already registered"
 
         # add user to database
         result = create_user(conn, name=name, email=email)
-
+        print(result)
         if not result:
             # TODO fail template, database error template
             pass
@@ -86,6 +84,20 @@ def index():
 
     else:
         return render_template("index.html")
+
+@app.post("/unsubscribe")
+def unsubscribe():
+    # make database connection
+    conn = psycopg2.connect(os.getenv("DATABASE_URL"), sslmode='require')
+
+    # get form data
+    name, email = request.form["name"], request.form["email"]
+
+    # remove user from database
+    delete_user(conn, email)
+
+    return f"User: {name} removed from mail list"
+
 
 if __name__ == "__main__":
     app.run(debug=False)
