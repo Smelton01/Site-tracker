@@ -64,20 +64,25 @@ def index():
 
         if not re.search(r"^[\w\.\+\-]+\@[\w]+\.[a-z]{2,3}$", email):
             # TODO invalid email template
-            return "Invalid Email"
+            message = "Please enter a valid email address"
+            return render_template("warning.html", message=message)
         
         # check if user already exists
         user_exists = check_user(conn, name, email)
         
         if user_exists:
             # TODO already registered template
-            return "User already registered"
+            message = "Your provided email address is already registered"
+            return render_template("warning.html", message=message)
 
         # add user to database
         result = create_user(conn, name=name, email=email)
+
+        # TODO send email nottification with latest posts
+        
         if not result:
             # TODO fail template, database error template
-            pass
+            return "DATABASE ERROR"
      
         return render_template("success.html", name=request.form["name"])
 
@@ -95,7 +100,7 @@ def unsubscribe():
     # remove user from database
     delete_user(conn, email)
 
-    return f"User: {name} removed from mail list"
+    return render_template("unsub.html", name=name)
 
 
 if __name__ == "__main__":

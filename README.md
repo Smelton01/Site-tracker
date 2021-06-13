@@ -5,7 +5,7 @@ Designed for residents of Fukuoka looking to make early bids on items being sold
 
 Deployed using Google's Compute Engine.
 
-View running demo [here](http://smelton01.github.io/me)
+View running demo [here](https://fuknowclass.herokuapp.com/)
 
 ## Requirements
 
