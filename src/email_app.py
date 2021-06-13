@@ -10,7 +10,8 @@ def send_email(TEXT,  FROM = os.getenv("FROM"), TO = ["b4ck10up@gmail.com"], SUB
     message = EmailMessage()
     message["Subject"] = SUBJECT
     message["From"] = FROM
-    message["To"] = TO
+    message["Bcc"] = TO
+    message["To"] = FROM
     
     message.set_content(TEXT)
     

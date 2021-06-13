@@ -40,10 +40,10 @@ def database_queries(conn, post, details):
         res = check_post(conn, details["title"], details["date"])
         if res:
             # post already handled
-            print("post already handled")
             return
         
         else:
+            print("New post")
             # send email notification
             email_content = f"Dear user,\n {details['text']} \nLink to original post: {details['src']} \nPosted by: {details['posted_by']} \nDate: {details['date']}\n\n{'*'*40}\n{footer}"
             
