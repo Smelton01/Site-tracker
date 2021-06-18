@@ -1,3 +1,4 @@
+from email import message
 from flask import Flask, request, render_template
 from .check_posts import main
 from .database import check_user, create_user, delete_user
@@ -82,7 +83,7 @@ def index():
         
         if not result:
             # TODO fail template, database error template
-            return "DATABASE ERROR"
+            return "500:DATABASE ERROR"
      
         return render_template("success.html", name=request.form["name"])
 
@@ -96,6 +97,12 @@ def unsubscribe():
 
     # get form data
     name, email = request.form["name"], request.form["email"]
+
+    res = check_user(conn, name, email)
+
+    if not res:
+        message = "Your email addresss is not registered."
+        return render_template("warning.html", message=message)
 
     # remove user from database
     delete_user(conn, email)

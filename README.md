@@ -3,7 +3,7 @@ A Flask based application designed to send email notifications when new posts ar
 
 Designed for residents of Fukuoka looking to make early bids on items being sold on the site.
 
-Deployed using Google's Compute Engine.
+Deployed on Heroku.
 
 View running demo [here](https://fuknowclass.herokuapp.com/)
 
