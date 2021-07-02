@@ -104,6 +104,6 @@ def get_users(conn):
     """
 
     cur = conn.cursor()
-    cur.execute("SELECT user_email FROM users")
-    data = cur.fetchall()
-    return [email[0] for email in data]
+    cur.execute("SELECT user_name, user_email FROM users")
+    users = cur.fetchall()
+    return users

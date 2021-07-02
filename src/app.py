@@ -1,7 +1,7 @@
 from email import message
 from flask import Flask, request, render_template
-from .check_posts import main
-from .database import check_user, create_user, delete_user
+from check_posts import main
+from database import check_user, create_user, delete_user
 import threading
 import atexit
 import re
@@ -9,7 +9,7 @@ import os
 import psycopg2
 
 
-POOL_TIME = 15*60 # 15 minutes
+POOL_TIME = 60 # 15 minutes
 
 
 # lock to control databae access
