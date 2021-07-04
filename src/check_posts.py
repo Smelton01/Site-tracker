@@ -1,7 +1,7 @@
 from requests import get
 from bs4 import BeautifulSoup as bs
 from .email_app import send_email
-from database import *
+from .database import *
 import psycopg2
 import os
 import logging
