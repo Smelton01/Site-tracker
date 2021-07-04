@@ -1,15 +1,15 @@
-from email import message
 from flask import Flask, request, render_template
-from check_posts import main
-from database import check_user, create_user, delete_user
+from .check_posts import main
+from .database import check_user, create_user, delete_user
 import threading
 import atexit
 import re
 import os
 import psycopg2
+import logging
 
 
-POOL_TIME = 60 # 15 minutes
+POOL_TIME = 60*15 # 15 minutes
 
 
 # lock to control databae access
@@ -66,6 +66,7 @@ def index():
         if not re.search(r"^[\w\.\+\-]+\@[\w]+\.[a-z]{2,3}$", email):
             # TODO invalid email template
             message = "Please enter a valid email address"
+            logging.error(message)
             return render_template("warning.html", message=message)
         
         # check if user already exists
@@ -74,6 +75,7 @@ def index():
         if user_exists:
             # TODO already registered template
             message = "Your provided email address is already registered"
+            logging.error(message)
             return render_template("warning.html", message=message)
 
         # add user to database
@@ -83,6 +85,7 @@ def index():
         
         if not result:
             # TODO fail template, database error template
+            logging.critical("DATABASE ERROR")
             return "500:DATABASE ERROR"
      
         return render_template("success.html", name=request.form["name"])
@@ -102,6 +105,7 @@ def unsubscribe():
 
     if not res:
         message = "Your email addresss is not registered."
+        logging.error(message)
         return render_template("warning.html", message=message)
 
     # remove user from database

@@ -1,7 +1,9 @@
+from logging import fatal
 import smtplib
 import os
 from email.message import EmailMessage
 from email.mime.text import *
+import logging
 
 def send_email(email_content, RECIPIENTS = [("Alice", "sample@email.com")], SUBJECT = "Update"):
     """
@@ -25,12 +27,12 @@ def send_email(email_content, RECIPIENTS = [("Alice", "sample@email.com")], SUBJ
             message["To"] = email
             message_content = f"Dear {name},\n {email_content}" 
             message.set_content(message_content)
-
+            
             server.send_message(message)
         
         server.close()
         return True
 
     except Exception as e:
-        print(e)
+        logging.error(e)
         return False

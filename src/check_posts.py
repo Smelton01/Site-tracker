@@ -1,16 +1,13 @@
 from requests import get
 from bs4 import BeautifulSoup as bs
-import json
-from email_app import send_email
-import time
-from random import randint
+from .email_app import send_email
 from database import *
-from datetime import datetime
 import psycopg2
 import os
+import logging
 
 url = "https://www.fukuoka-now.com/en/classified/archive/?category=156"
-footer = "These email updates are provided by Simon J. View the source code at https://github.com/Smelton01/Site_tracker \nTo unsubcribe please follow this link https://github.com/Smelton01/Site_tracker"
+footer = "These email updates are provided by Simon J. View the source code at https://github.com/Smelton01/Site_tracker \nTo unsubcribe please follow this link https://fuknowclass.herokuapp.com/"
 
 
 def main():    
@@ -24,7 +21,7 @@ def main():
     log = get_posts(url)
 
     if not log:
-        print("Connection Error!!!")
+        logging.critical("Connection Error!!!")
         return False
 
     for post, details in log.items():
@@ -59,7 +56,7 @@ def database_queries(conn, post, details):
                 post_details = (post, details["text"], details["posted_by"], details["date"])
                 create_post(conn, post_details)
             else:
-                print("Failed to send email")
+                logging.error("Failed to send email")
             return
 
 
