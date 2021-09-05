@@ -1,8 +1,8 @@
 from logging import fatal
 import smtplib
 import os
-from .email.message import EmailMessage
-from .email.mime.text import *
+from email.message import EmailMessage
+from email.mime.text import *
 import logging
 
 def send_email(email_content, RECIPIENTS = [("Alice", "sample@email.com")], SUBJECT = "Update"):

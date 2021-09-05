@@ -10,7 +10,7 @@ import psycopg2
 import logging
 
 
-POOL_TIME = 60*1# 15 minutes
+POOL_TIME = 60*15 # 15 minutes
 footer = "These email updates are provided by Simon J. View details  at https://github.com/Smelton01/Site_tracker \nTo unsubcribe for further updates please go to https://fuknowclass.herokuapp.com/"
 
 
@@ -90,8 +90,8 @@ def index():
             logging.critical("DATABASE ERROR")
             return "500:DATABASE ERROR"
      
-        success_email = f"Dear {name} \n\nThank You for registering on our site. \nWe will be sending you posts from the Fukuoka Now Classified section from this email as soon as they are posted.\n{footer} "
-        send_email(success_email, RECIPIENTS=[email], SUBJECT="Registration Complete.")
+        success_email = f"\nThank You for registering on our site. \nWe will be sending you posts from the Fukuoka Now Classified section from this email as soon as they are posted.\n{footer} "
+        send_email(success_email, RECIPIENTS=[(name, email)], SUBJECT="Registration Complete.")
         return render_template("success.html", name=request.form["name"])
 
     else:
