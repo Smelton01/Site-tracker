@@ -90,7 +90,7 @@ def index():
             logging.critical("DATABASE ERROR")
             return "500:DATABASE ERROR"
      
-        success_email = f"\nThank You for registering on our site. \nWe will be sending you posts from the Fukuoka Now Classified section from this email as soon as they are posted.\n{footer} "
+        success_email = f"\nThank You for registering on our site. \nWe will be sending you posts from the Fukuoka Now Classified section from this email as soon as they are posted.\n\n{footer} "
         send_email(success_email, RECIPIENTS=[(name, email)], SUBJECT="Registration Complete.")
         return render_template("success.html", name=request.form["name"])
 
