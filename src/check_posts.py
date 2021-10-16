@@ -10,7 +10,10 @@ url = "https://www.fukuoka-now.com/en/classified/archive/?category=156"
 footer = "These email updates are provided by Simon J. View the source code at https://github.com/Smelton01/Site_tracker \nTo unsubcribe please follow this link https://fuknowclass.herokuapp.com/"
 
 
-def main():    
+def scrape_page():
+    """
+    Scrape URL for new posts and send email updates to users
+    """
     # create connection to PostgreSQL database
     conn = psycopg2.connect(os.getenv("DATABASE_URL"), sslmode='require')
 
@@ -18,18 +21,15 @@ def main():
     create_table(conn)
 
     # get posts from url
-    log = get_posts(url)
-
-    if not log:
-        logging.critical("Connection Error!!!")
+    posts = get_posts(url)
+    if not posts:
         return False
 
-    for post, details in log.items():
-        database_queries(conn, post, details)
-    print("Checked for updates, resting for 15 minutes...")
-    # conn.close()
+    for post, details in posts.items():
+        send_updates(conn, post, details)
 
-def database_queries(conn, post, details):
+
+def send_updates(conn, post, details):
     """
     Check database for post and send email, update database if not exists
     :param conn: Connection to the SQLite database
@@ -41,23 +41,24 @@ def database_queries(conn, post, details):
         if res:
             # post already handled
             return
-        
+
+        # draft email notification
+        email_content = f"{details['text']} \nLink to original post: {details['src']} \nPosted by: {details['posted_by']} \nDate: {details['date']}\n\n{'*'*40}\n{footer}"
+
+        recipients = get_users(conn)
+
+        # try sending email to registered users
+        status = send_email(
+            email_content, subject="[FUKNOW] " + post, recipients=recipients)
+
+        if status:
+            # add seen post to database
+            post_details = (post, details["text"],
+                            details["posted_by"], details["date"])
+            create_post(conn, post_details)
         else:
-            print("New post")
-            # send email notification
-            email_content = f"{details['text']} \nLink to original post: {details['src']} \nPosted by: {details['posted_by']} \nDate: {details['date']}\n\n{'*'*40}\n{footer}"
-            
-            recipients = get_users(conn)
-
-            status = send_email(email_content, SUBJECT = "[FUKNOW] " + post, RECIPIENTS=recipients)
-
-            if status:
-                # add seen post to database
-                post_details = (post, details["text"], details["posted_by"], details["date"])
-                create_post(conn, post_details)
-            else:
-                logging.error("Failed to send email")
-            return
+            logging.error("Failed to send email")
+        return
 
 
 def get_posts(url):
@@ -69,7 +70,7 @@ def get_posts(url):
     try:
         response = get(url)
     except Exception as e:
-        print(e)
+        logging.critical("failed to get: ", e)
         return None
     page = bs(response.text, "html.parser")
     posts = page.find("div", class_="section_post_block02")
@@ -80,22 +81,16 @@ def get_posts(url):
     # get the title of the post
     for post in posts:
         titles.append(post.find("h3").text)
-    log = {}
+    all_posts = {}
     # get the full text of the post
     for i, title in enumerate(titles):
         resp = get(det_url[i])
         pg = bs(resp.text, "html.parser")
         txt = pg.find("div", class_="entry").text
-        # log[title] = "Yo Dude,\n" + txt + "\n" + det_url[i] + "\n" + posted[i].text.strip()
+
         *date, posted_by = posted[i].text.strip().split()
         date = " ".join(date[2:-1])
-        # print(date)
-        # date = datetime #.strptime(date, "%b. %d, %Y, %H:%M")
-        log[title] = {"title": title, "text": txt, "src": det_url[i], "date": date, "posted_by": posted_by}
-        # .strftime("%b. %d, %Y, %H:%M")
+        all_posts[title] = {"title": title, "text": txt,
+                            "src": det_url[i], "date": date, "posted_by": posted_by}
 
-    return log
-
-if __name__ == "__main__":
-    main()
-
+    return all_posts
