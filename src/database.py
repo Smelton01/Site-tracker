@@ -1,3 +1,5 @@
+import logging
+
 
 def create_table(conn):
     """ create a table from the create_table_sql statement
@@ -20,15 +22,15 @@ def create_table(conn):
                                     post_date TEXT NOT NULL
                                 );"""
 
-
     try:
         c = conn.cursor()
         c.execute(sql_create_posts_table)
         c.execute(sql_create_users_table)
     except Exception as e:
-        print(e)
+        logging.critical(e)
     finally:
         conn.commit()
+
 
 def create_user(conn, name="Anon", email="sample@web.com"):
     """
@@ -39,12 +41,13 @@ def create_user(conn, name="Anon", email="sample@web.com"):
     """
     sql = ''' INSERT INTO users(user_name,user_email)
               VALUES(%s,%s) RETURNING user_id'''
-    
+
     user = (name, email)
     cur = conn.cursor()
     cur.execute(sql, user)
     conn.commit()
     return cur.fetchone()
+
 
 def create_post(conn, post):
     sql = """
@@ -55,6 +58,7 @@ def create_post(conn, post):
     cur.execute(sql, post)
     conn.commit()
     return cur.fetchone()
+
 
 def delete_user(conn, email):
     """
@@ -67,6 +71,7 @@ def delete_user(conn, email):
     cur = conn.cursor()
     cur.execute(sql, (email,))
     conn.commit()
+
 
 def check_post(conn, title, date):
     """
@@ -81,10 +86,11 @@ def check_post(conn, title, date):
     """
 
     cur = conn.cursor()
-    cur.execute(sql, (title,date))
+    cur.execute(sql, (title, date))
     data = cur.fetchone()
     return True if data else False
-    
+
+
 def check_user(conn, name, email):
     """
     Check if a user is registered in the database
@@ -92,11 +98,12 @@ def check_user(conn, name, email):
     :param name: User name
     :param email: User email address
     :returns: boolean
-    """    
+    """
     cur = conn.cursor()
     cur.execute("SELECT * FROM users WHERE user_email=%s", (email,))
     data = cur.fetchone()
     return True if data else False
+
 
 def get_users(conn):
     """
@@ -105,5 +112,4 @@ def get_users(conn):
 
     cur = conn.cursor()
     cur.execute("SELECT user_name, user_email FROM users")
-    users = cur.fetchall()
-    return users
+    return cur.fetchall()
