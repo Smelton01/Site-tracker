@@ -1,4 +1,4 @@
-# Site-tracker
+# FukNow Classified
 
 A Flask based application designed to send email notifications when new posts are made to [Fukuoka-now](https://www.fukuoka-now.com/) classified section.
 
